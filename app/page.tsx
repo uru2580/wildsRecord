@@ -438,10 +438,10 @@ const SimulatorPage: React.FC = () => {
       }}
     >
       <Typography variant="h4" gutterBottom>
-        アイテム記録システム
+        武器装飾品記録
       </Typography>
       <TextField
-        label="アイテム名でフィルタ"
+        label="装飾品名でフィルタ"
         value={filterText}
         onChange={(e) => setFilterText(e.target.value)}
         fullWidth
@@ -457,7 +457,7 @@ const SimulatorPage: React.FC = () => {
         }}
       />
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h6">記録されたアイテム</Typography>
+        <Typography variant="h6">装飾品名</Typography>
         {filteredItems.map((item, index) => (
           <Grid
             key={index}
