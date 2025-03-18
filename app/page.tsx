@@ -387,10 +387,10 @@ const SimulatorPage: React.FC = () => {
     localStorage.setItem('mhwItems', JSON.stringify(items));
   }, [items]);
 
-  const handleQuantityChange = (index: number, quantity: number) => {
+  const handleQuantityChange = (name: string, quantity: number) => {
     setItems((prevItems) =>
-      prevItems.map((item, i) =>
-        i === index ? { ...item, quantity } : item
+      prevItems.map((item) =>
+        item.name === name ? { ...item, quantity } : item
       )
     );
   };
@@ -438,10 +438,10 @@ const SimulatorPage: React.FC = () => {
       }}
     >
       <Typography variant="h4" gutterBottom>
-        武器装飾品記録
+        アイテム記録システム
       </Typography>
       <TextField
-        label="武器装飾品名でフィルタ"
+        label="アイテム名でフィルタ"
         value={filterText}
         onChange={(e) => setFilterText(e.target.value)}
         fullWidth
@@ -457,7 +457,7 @@ const SimulatorPage: React.FC = () => {
         }}
       />
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h6">武器装飾品一覧</Typography>
+        <Typography variant="h6">記録されたアイテム</Typography>
         {filteredItems.map((item, index) => (
           <Grid
             key={index}
@@ -475,7 +475,7 @@ const SimulatorPage: React.FC = () => {
             <Grid item xs={6}>
               <Select
                 value={item.quantity}
-                onChange={(e) => handleQuantityChange(index, Number(e.target.value))}
+                onChange={(e) => handleQuantityChange(item.name, Number(e.target.value))}
                 fullWidth
                 sx={{
                   color: 'black', // プルダウンメニューの文字色
