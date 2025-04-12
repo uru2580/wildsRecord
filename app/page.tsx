@@ -13,8 +13,11 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 import { 武器装飾品, 防具装飾品, 護石 } from './itemsData'; // データをインポート
+
+const KonamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 interface Item {
   name: string;
@@ -29,6 +32,19 @@ const SimulatorPage: React.FC = () => {
   const [items護石, setItems護石] = useState<Item[]>(護石);
 
   const [filterText, setFilterText] = useState('');
+  const [keySequence, setKeySequence] = useState<string[]>([]);
+
+  const router = useRouter();
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const newSequence = [...keySequence, event.key].slice(-KonamiCode.length); // 直近の入力を追跡
+    setKeySequence(newSequence);
+
+    if (JSON.stringify(newSequence) === JSON.stringify(KonamiCode)) {
+      // シーケンスが一致した場合に遷移
+      router.push('/SecretPage');
+    }
+  };
 
   const currentItems =
     activeTab === 0 ? items武器装飾品 : activeTab === 1 ? items防具装飾品 : items護石;
@@ -225,6 +241,7 @@ const SimulatorPage: React.FC = () => {
         label="アイテム名でフィルタ"
         value={filterText}
         onChange={(e) => setFilterText(e.target.value)}
+        onKeyDown={handleKeyDown} // キーダウンイベントを追加
         fullWidth
         sx={{
           mb: 3,
