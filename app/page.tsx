@@ -266,7 +266,7 @@ const SimulatorPage: React.FC = () => {
               mb: 0.1,
             }}
           >
-            <Grid item xs={2}>
+            <Grid item xs={5}>
               <Typography
                 variant="body1"
                 sx={{
@@ -277,7 +277,7 @@ const SimulatorPage: React.FC = () => {
                 {item.name}
               </Typography>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={3}>
               <Select
                 value={item.quantity}
                 onChange={(e) =>
