@@ -36,6 +36,34 @@ const SimulatorPage: React.FC = () => {
   const setCurrentItems =
     activeTab === 0 ? setItems武器装飾品 : activeTab === 1 ? setItems防具装飾品 : setItems護石;
 
+  const customSort = (a: Item, b: Item) => {
+    const filterIndexA = a.name.indexOf(filterText);
+    const filterIndexB = b.name.indexOf(filterText);
+    const dotIndexA = a.name.indexOf('・');
+    const dotIndexB = b.name.indexOf('・');
+
+    // 1. 「・」が無いアイテムを優先
+    const hasDotA = dotIndexA !== -1;
+    const hasDotB = dotIndexB !== -1;
+    if (!hasDotA && hasDotB) return -1; // Aには「・」がない、Bには「・」がある → Aを優先
+    if (hasDotB && !hasDotA) return 1; // Bには「・」がない、Aには「・」がある → Bを優先
+
+    // 2. 「・」の前にフィルタ文字列があるアイテムを次に
+    const isFilterBeforeDotA = filterIndexA !== -1 && (!hasDotA || filterIndexA < dotIndexA);
+    const isFilterBeforeDotB = filterIndexB !== -1 && (!hasDotB || filterIndexB < dotIndexB);
+    if (isFilterBeforeDotA && !isFilterBeforeDotB) return -1; // Aが優先
+    if (isFilterBeforeDotB && !isFilterBeforeDotA) return 1;  // Bが優先
+
+    // 3. 「・」の後にフィルタ文字列があるアイテムを最後に
+    const isFilterAfterDotA = filterIndexA !== -1 && hasDotA && filterIndexA > dotIndexA;
+    const isFilterAfterDotB = filterIndexB !== -1 && hasDotB && filterIndexB > dotIndexB;
+    if (isFilterAfterDotA && !isFilterAfterDotB) return 1; // Aが後
+    if (isFilterAfterDotB && !isFilterAfterDotA) return -1; // Bが後
+
+    // 4. 同じ条件内では名前の文字列順でソート
+    return b.name.localeCompare(b.name);
+  };
+
   // ローカルストレージからデータを読み込む
   useEffect(() => {
     const stored武器装飾品 = localStorage.getItem('items武器装飾品');
@@ -126,17 +154,28 @@ const SimulatorPage: React.FC = () => {
       ...item,
       originalIndex: index,
     }))
-    .filter((item) => item.name.includes(filterText));
+    .filter((item) => item.name.includes(filterText))
+    .sort(customSort);
 
   return (
     <Container
       sx={{
         mt: 4,
-        backgroundColor: '#f9f1e7',
+        backgroundColor: '#fff7f0',
         color: '#333',
         padding: 4,
         borderRadius: 4,
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+      }}
+    >
+    <Box
+      sx={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        backgroundColor: '#fff7f0',
+        padding: 2,
+        // boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
       }}
     >
       <Typography
@@ -148,7 +187,18 @@ const SimulatorPage: React.FC = () => {
           fontWeight: 'bold',
         }}
       >
-        モンハンワイルズアイテム記録
+        モンハンワイルズ
+      </Typography>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          textAlign: 'center',
+          color: '#f04e31',
+          fontWeight: 'bold',
+        }}
+      >
+        アイテム記録
       </Typography>
 
       <Tabs
@@ -182,23 +232,24 @@ const SimulatorPage: React.FC = () => {
           borderRadius: 2,
         }}
       />
+    </Box>
 
       <Box sx={{ mb: 3 }}>
         {filteredItems.map((item) => (
           <Grid
             key={item.originalIndex}
             container
-            spacing={2}
+            spacing={1}
             alignItems="center"
             sx={{
-              py: 1.5,
-              px: 2,
-              borderRadius: 2,
+              py: 0.2,
+              px: 1,
+              borderRadius: 1,
               backgroundColor: '#fff7f0',
-              mb: 1,
+              mb: 0.1,
             }}
           >
-            <Grid item xs={8}>
+            <Grid item xs={2}>
               <Typography
                 variant="body1"
                 sx={{
@@ -209,7 +260,7 @@ const SimulatorPage: React.FC = () => {
                 {item.name}
               </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={1}>
               <Select
                 value={item.quantity}
                 onChange={(e) =>
